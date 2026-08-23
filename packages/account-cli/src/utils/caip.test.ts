@@ -37,6 +37,12 @@ describe('CAIP helpers', () => {
       expect(isValidChainId(':8453')).toBe(false);
       expect(isValidChainId('8453')).toBe(false);
     });
+
+    it('enforces the CAIP-2 reference length limit', () => {
+      expect(isValidChainId(`example:${'a'.repeat(32)}`)).toBe(true);
+      expect(isValidChainId(`example:${'a'.repeat(33)}`)).toBe(false);
+      expect(parseChainId(`example:${'a'.repeat(33)}`)).toBeNull();
+    });
   });
 
   describe('resolveChainId', () => {
