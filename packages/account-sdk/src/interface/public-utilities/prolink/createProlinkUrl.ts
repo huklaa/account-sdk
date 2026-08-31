@@ -38,10 +38,11 @@ export function createProlinkUrl(
   }
 
   const link = new URL(url);
-  link.searchParams.set('p', prolink);
   Object.entries(additionalQueryParams ?? {}).forEach(([key, value]) => {
     link.searchParams.set(key, value);
   });
+  // `p` is reserved for the encoded prolink payload and must remain authoritative.
+  link.searchParams.set('p', prolink);
 
   return link.toString();
 }
