@@ -137,7 +137,7 @@ export async function decodeProlink(payload: string): Promise<ProlinkDecoded> {
   // Decompress
   const decompressed = await decompressPayload(bytes);
 
-  // Deserialize protobuf
+  // Deserialize from protobuf
   const rpcPayload = decodeRpcLinkPayload(decompressed);
 
   // Validate protocol version
@@ -204,6 +204,9 @@ export async function decodeProlink(payload: string): Promise<ProlinkDecoded> {
 
   throw new Error(`Unsupported shortcut ID: ${rpcPayload.shortcutId}`);
 }
+
+// Re-export universal link utilities for Node.js consumers
+export { createProlinkUrl } from './createProlinkUrl.js';
 
 // Re-export types
 export type { ProlinkDecoded, ProlinkRequest } from './types.js';
