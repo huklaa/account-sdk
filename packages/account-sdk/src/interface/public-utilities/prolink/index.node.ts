@@ -137,7 +137,7 @@ export async function decodeProlink(payload: string): Promise<ProlinkDecoded> {
   // Decompress
   const decompressed = await decompressPayload(bytes);
 
-  // Deserialize from protobuf
+  // Deserialize protobuf
   const rpcPayload = decodeRpcLinkPayload(decompressed);
 
   // Validate protocol version
