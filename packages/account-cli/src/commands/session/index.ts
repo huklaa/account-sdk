@@ -87,18 +87,19 @@ export function registerSessionCommands(program: Command) {
         if (opts.all) {
           const destroyed = destroyAllSessions();
           formatOutput({ status: 'destroyed', sessions: destroyed }, globalOpts.json);
-        } else if (identifier && opts.mode) {
-          const mode = opts.mode as SessionMode;
-          destroySession(mode, identifier);
-          formatOutput({ status: 'destroyed', mode, identifier }, globalOpts.json);
         } else if (identifier) {
-          const sessions = listSessions();
+          const mode = opts.mode as SessionMode | undefined;
           const target = identifier.toLowerCase();
-          const match = sessions.find((s) => sessionKey(s).toLowerCase() === target);
+          const match = listSessions().find(
+            (s) => (!mode || s.mode === mode) && sessionKey(s).toLowerCase() === target
+          );
           if (!match) {
+            if (mode) {
+              throw new CLIError('INVALID_INPUT', `Session not found for ${mode}:${identifier}`);
+            }
             throw new CLIError('INVALID_INPUT', `No session found for ${identifier}`);
           }
-          destroySession(match.mode, identifier);
+          destroySession(match.mode, sessionKey(match));
           formatOutput({ status: 'destroyed', mode: match.mode, identifier }, globalOpts.json);
         } else {
           throw new CLIError('INVALID_INPUT', 'Provide an address or use --all');
