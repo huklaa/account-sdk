@@ -22,6 +22,14 @@ describe('CAIP helpers', () => {
     it('returns null for missing namespace', () => {
       expect(parseChainId(':8453')).toBeNull();
     });
+
+    it('enforces the 32-character CAIP-2 reference limit', () => {
+      expect(parseChainId(`example:${'a'.repeat(32)}`)).toEqual({
+        namespace: 'example',
+        reference: 'a'.repeat(32),
+      });
+      expect(parseChainId(`example:${'a'.repeat(33)}`)).toBeNull();
+    });
   });
 
   describe('isValidChainId', () => {
@@ -36,6 +44,11 @@ describe('CAIP helpers', () => {
       expect(isValidChainId('eip155')).toBe(false);
       expect(isValidChainId(':8453')).toBe(false);
       expect(isValidChainId('8453')).toBe(false);
+    });
+
+    it('accepts a 32-character reference and rejects a 33-character reference', () => {
+      expect(isValidChainId(`example:${'a'.repeat(32)}`)).toBe(true);
+      expect(isValidChainId(`example:${'a'.repeat(33)}`)).toBe(false);
     });
   });
 
