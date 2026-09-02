@@ -89,8 +89,16 @@ export function registerSessionCommands(program: Command) {
           formatOutput({ status: 'destroyed', sessions: destroyed }, globalOpts.json);
         } else if (identifier && opts.mode) {
           const mode = opts.mode as SessionMode;
-          destroySession(mode, identifier);
-          formatOutput({ status: 'destroyed', mode, identifier }, globalOpts.json);
+          const target = identifier.toLowerCase();
+          const match = listSessions().find(
+            (s) => s.mode === mode && sessionKey(s).toLowerCase() === target
+          );
+          if (!match) {
+            throw new CLIError('INVALID_INPUT', `Session not found for ${mode}:${identifier}`);
+          }
+          const storedIdentifier = sessionKey(match);
+          destroySession(mode, storedIdentifier);
+          formatOutput({ status: 'destroyed', mode, identifier: storedIdentifier }, globalOpts.json);
         } else if (identifier) {
           const sessions = listSessions();
           const target = identifier.toLowerCase();
@@ -98,8 +106,12 @@ export function registerSessionCommands(program: Command) {
           if (!match) {
             throw new CLIError('INVALID_INPUT', `No session found for ${identifier}`);
           }
-          destroySession(match.mode, identifier);
-          formatOutput({ status: 'destroyed', mode: match.mode, identifier }, globalOpts.json);
+          const storedIdentifier = sessionKey(match);
+          destroySession(match.mode, storedIdentifier);
+          formatOutput(
+            { status: 'destroyed', mode: match.mode, identifier: storedIdentifier },
+            globalOpts.json
+          );
         } else {
           throw new CLIError('INVALID_INPUT', 'Provide an address or use --all');
         }
