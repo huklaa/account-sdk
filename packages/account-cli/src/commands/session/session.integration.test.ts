@@ -195,6 +195,27 @@ describe('session CLI integration', () => {
       expect((list.sessions as unknown[]).length).toBe(1);
     });
 
+    it('destroys a session by identifier regardless of address casing', () => {
+      const result = runJson(['session', 'destroy', '0xeoa444'], envOverride);
+      expect(result.status).toBe('destroyed');
+      expect(result.mode).toBe('external-eoa');
+
+      const list = runJson(['session', 'list'], envOverride);
+      expect((list.sessions as unknown[]).length).toBe(1);
+    });
+
+    it('destroys an explicit-mode session regardless of address casing', () => {
+      const result = runJson(
+        ['session', 'destroy', '0xeoa444', '--mode', 'external-eoa'],
+        envOverride
+      );
+      expect(result.status).toBe('destroyed');
+      expect(result.mode).toBe('external-eoa');
+
+      const list = runJson(['session', 'list'], envOverride);
+      expect((list.sessions as unknown[]).length).toBe(1);
+    });
+
     it('destroys all sessions', () => {
       const result = runJson(['session', 'destroy', '--all'], envOverride);
       expect(result.status).toBe('destroyed');
